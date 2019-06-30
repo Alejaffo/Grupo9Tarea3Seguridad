@@ -15,24 +15,19 @@ private byte[] doc;
 private byte[] firmaOrig;
 private byte[] clavePubFirma;
 
-    public VerificadorFirmas(byte[] doc, byte[] firmaOrig, byte[] clavePubFirma) {
-        this.doc = doc;
-        this.firmaOrig = firmaOrig;
-        this.clavePubFirma = clavePubFirma;
-    }
+
+
+
+public VerificadorFirmas(byte[] doc, byte[] firmaOrig, byte[] clavePubFirma) {
+    this.doc = doc;
+    this.firmaOrig = firmaOrig;
+    this.clavePubFirma = clavePubFirma;
+}
 
   
-
-
-/**        
-public VerificadorFirmas (byte[] documento, byte[] firma, byte[] clavePub) { 
-   
-   this.doc = documento;    
-   this.firmaOrig = firma;
-   this.clavePubFirma = clavePub;
-}
+/*
+Metodo que verifica la firma del archivo utilizando SHA-256 y RSA
 */
-
 public boolean verificaFirma () throws Exception {
    
     X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(this.clavePubFirma);

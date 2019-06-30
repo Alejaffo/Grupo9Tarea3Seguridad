@@ -8,8 +8,10 @@ public class GeneradorClaves {
    private PrivateKey privateKey;
    private PublicKey publicKey;
    
+   // Genera el par de claves publica/privada usando el algoritmo RSA
    public GeneradorClaves(int largo) throws NoSuchAlgorithmException, NoSuchProviderException {
       
+     
       KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
       SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
       keyGen.initialize(largo, random);
@@ -26,6 +28,9 @@ public class GeneradorClaves {
       return this.publicKey;
    }
    
+   /*
+        Genera un archivo con la clave publica
+    */
    public void copiarPubKArchivo(PublicKey pubKey, String path) throws Exception {
        
         byte[] clave = pubKey.getEncoded();
@@ -34,6 +39,9 @@ public class GeneradorClaves {
         clavefos.close(); 
       }
    
+   /*
+        Genera un archivo con la clave privada
+    */
    public void copiarPrivKArchivo(PrivateKey privKey, String path) throws Exception {
        
         byte[] clave = privKey.getEncoded();

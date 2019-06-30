@@ -67,11 +67,8 @@ public class controlDeFirma implements Serializable{
     }
     
    
-    
+    // Metodo que se llama del la interfaz web para firmar una archivo
     public void firmarArchivo() throws Exception{
-       
-        
-        
         try{
            //paso archivo de private Key a byte[] buscandolo con nombre de usurio
             byte[] bytePrivada = fileToBytes(direccionKeyPrivadas+nombreUsuario+".prv");
@@ -103,6 +100,7 @@ public class controlDeFirma implements Serializable{
         
     }
     
+    // Metodo que se llama de la interfaz wep para verificar la firma de un archivo
     public void verificarArchivo() throws Exception {
         
         // creo un Byte[] del archivo clave publica del usuario
@@ -166,7 +164,7 @@ public class controlDeFirma implements Serializable{
     }
     
     
-    
+    // Convierte un archivo a un array de bytes
     public static byte[] fileToBytes (String archivo) {
        try{
            File file = new File(archivo);

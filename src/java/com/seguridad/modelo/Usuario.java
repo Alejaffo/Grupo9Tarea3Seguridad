@@ -32,7 +32,7 @@ public class Usuario {
       
 
     /**
-     * Creates a new instance of Usuario
+     * Crea una instancia de Usuario
      */
     public Usuario() throws NoSuchAlgorithmException, NoSuchProviderException {
         
@@ -110,6 +110,9 @@ public class Usuario {
         this.bloqueado = bloqueado;
     }
     
+    /*
+    Metodo para generar las claves prublica y privada de un usuario
+    */
     public void generarClavePublicaPrivada() throws NoSuchAlgorithmException, NoSuchProviderException, Exception{
        
         GeneradorClaves keyGenerator = new GeneradorClaves(1024);

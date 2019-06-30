@@ -22,14 +22,13 @@ import javax.faces.view.ViewScoped;
 public class controlDeEncriptacion implements Serializable{
 
     /**
-     * Creates a new instance of controlDeEncriptacion
+     * Crea instancias de objetos necesarias para controlDeEncriptacion
      */
-    
     private EncriptDecriptFiles encriptDecriptObject;
     private String rutaArchivoDestino ="C:\\Users\\Alejandro\\Documents\\NetBeansProjects\\PruebaWeb5\\web\\resources\\ArchivosEncriptados\\";
-    /**
-     *
-     */
+    
+    
+    
     public controlDeEncriptacion(){
         
        encriptDecriptObject = new EncriptDecriptFiles();
@@ -44,6 +43,7 @@ public class controlDeEncriptacion implements Serializable{
         this.encriptDecriptObject = encriptDecriptObject;
     }
         
+    // Metodo que es llamado de la interfaz web para encriptar un archivo
     public void encriptar() throws Exception{
        
         try{
@@ -67,6 +67,7 @@ public class controlDeEncriptacion implements Serializable{
         
     }
     
+    // Metodo que es llamado de la interfaz web para desencriptar un archivo
     public void desencriptar() throws Exception{
         
         try{

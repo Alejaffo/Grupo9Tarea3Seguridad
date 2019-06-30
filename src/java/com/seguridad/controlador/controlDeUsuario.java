@@ -58,6 +58,7 @@ public class controlDeUsuario implements Serializable{
         this.usuario = usuario;
     }
     
+    // Metodo de registro de usuario que valida la fortaleza de la password
     public boolean registrarUsuario() throws NoSuchProviderException, Exception{
         
         if(existeUsuario(this.usuario.getUsuario())){
@@ -90,7 +91,8 @@ public class controlDeUsuario implements Serializable{
             
             String sal =sal();
             String password=hashClave(this.usuario.getPassword()+sal);
-            // generar clave publica
+            
+            // Metodo que genera el par de claves publico privado de un usuario
             usuario.generarClavePublicaPrivada();
             
             datosAGuardar[0]=this.usuario.getNombre()+","+this.usuario.getApellido()+","+this.usuario.getUsuario()+","+password+","+sal+","+fecha+",usuario,false,false";
@@ -108,6 +110,7 @@ public class controlDeUsuario implements Serializable{
     }
     
     
+    // Metodo que verifica si el usuario existe y si la clave es correcta 
     public boolean autenticarUsuario() {
         if (existeUsuario(this.usuario.getUsuario())) {
             String sal = devolverSalDeUsuario(this.usuario.getUsuario());
