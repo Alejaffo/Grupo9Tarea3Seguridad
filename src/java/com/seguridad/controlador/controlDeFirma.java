@@ -7,6 +7,7 @@ package com.seguridad.controlador;
 
 import com.seguridad.modelo.GeneradorFirmas;
 import com.seguridad.modelo.Usuario;
+import com.seguridad.modelo.VerificadorFirmas;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,6 +18,8 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.inject.Named;
 import javax.faces.view.ViewScoped;
 
@@ -30,10 +33,12 @@ public class controlDeFirma implements Serializable{
 
     
     private GeneradorFirmas genFirmas;
+    private VerificadorFirmas firmVerif;
     private String nombreUsuario;
     
     private String rutaArchivoFirmar;
     private String direccionKeyPrivadas = "C:\\Users\\Alejandro\\Documents\\NetBeansProjects\\PruebaWeb5\\web\\resources\\ClavesPrivadas\\";
+    private String direccionKeyPublicas = "C:\\Users\\Alejandro\\Documents\\NetBeansProjects\\PruebaWeb5\\web\\resources\\ClavesPublicas\\";
     private String direccionFirmas = "C:\\Users\\Alejandro\\Documents\\NetBeansProjects\\PruebaWeb5\\web\\resources\\ArchivosFirma\\";
     private String archivoFirma;
     /**
@@ -42,17 +47,8 @@ public class controlDeFirma implements Serializable{
     public controlDeFirma() throws NoSuchAlgorithmException, InvalidKeySpecException, Exception {
         
         
-        //byte[] bytePrivada = fileToBytes(direccionKeyPrivadas+nombreUsuario+".prv");
-        byte[] bytePrivada = fileToBytes("C:\\Users\\Alejandro\\Documents\\NetBeansProjects\\PruebaWeb5\\web\\resources\\ClavesPrivadas\\joseUsuario.prv");
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(bytePrivada);
-        System.out.print("");
-        PrivateKey privatekey = kf.generatePrivate(privateKeySpec);
-        //PrivateKey privatekey = kf.generatePrivate(new PKCS8EncodedKeySpec(bytePrivada));
-        genFirmas = new GeneradorFirmas(privatekey);
-        
-        
     }
+    
 
     public String getDireccionFirmas() {
         return direccionFirmas;
@@ -73,13 +69,65 @@ public class controlDeFirma implements Serializable{
    
     
     public void firmarArchivo() throws Exception{
-        byte[] byteFirma = genFirmas.firmaDoc(this.direccionKeyPrivadas+nombreUsuario+".prv");
+       
         
-        genFirmas.copiaFirmaArchivo(byteFirma, this.direccionFirmas+nombreUsuario+".frm");
+        
+        try{
+           //paso archivo de private Key a byte[] buscandolo con nombre de usurio
+            byte[] bytePrivada = fileToBytes(direccionKeyPrivadas+nombreUsuario+".prv");
+            KeyFactory kf = KeyFactory.getInstance("RSA");
+            PKCS8EncodedKeySpec privateKeySpec = new PKCS8EncodedKeySpec(bytePrivada);
+            // genero mi clave privada de tipo privateKey a partir del archivo
+            PrivateKey privatekey = kf.generatePrivate(privateKeySpec);
+            // Inicializar objecto generadorFirmas
+            genFirmas = new GeneradorFirmas(privatekey);
+
+            // Creo byte[] del archivo a firmar
+            byte[] byteFirma = genFirmas.firmaDoc(this.rutaArchivoFirmar);
+            // Crea otro archivo firma desde el byte[] generado
+            genFirmas.copiaFirmaArchivo(byteFirma, this.direccionFirmas+archivoFirma+".frm");
+
+            //Mostramos mensaje de que el archivo encriptado fue guradado correctamente
+            FacesMessage mensaje = new FacesMessage("Archivo firma generado !");
+            FacesContext contexto = FacesContext.getCurrentInstance();
+            contexto.addMessage(null,mensaje); 
+        }
+        catch(Exception e){
+            //Mostramos mensaje de que el archivo encriptado fue guradado correctamente
+            FacesMessage mensaje = new FacesMessage("Error al generar firma");
+            FacesContext contexto = FacesContext.getCurrentInstance();
+            contexto.addMessage(null,mensaje); 
+        }
+        
+        
         
     }
     
-    public void verificarArchivo() {
+    public void verificarArchivo() throws Exception {
+        
+        // creo un Byte[] del archivo clave publica del usuario
+        byte[] bytePublica = fileToBytes(direccionKeyPublicas+nombreUsuario+".pub");
+        // creo un Byte[] del archivo clave publica del usuario
+        byte[] byteArchivoAVerificar = fileToBytes(this.rutaArchivoFirmar);
+        // creo un byte[] del archivo firma con el cual voy a verificar el archivo original
+        byte[] byteArchivoFirma = fileToBytes(direccionFirmas+archivoFirma+".frm");
+        
+        // creo una instancia de VerificadorFirmas
+        firmVerif = new VerificadorFirmas(byteArchivoAVerificar,byteArchivoFirma,bytePublica);
+        // el metodo verificarFirma() me devuelve true si el se valido la verificacion
+        boolean verificado = firmVerif.verificaFirma();
+        
+        if(verificado == true){
+            FacesMessage mensaje = new FacesMessage("Documento válido");
+            FacesContext contexto = FacesContext.getCurrentInstance();
+            contexto.addMessage(null,mensaje);
+        }
+        else{
+            FacesMessage mensaje = new FacesMessage("Documento inválido");
+            FacesContext contexto = FacesContext.getCurrentInstance();
+            contexto.addMessage(null,mensaje);
+        }
+        
         
     }
 

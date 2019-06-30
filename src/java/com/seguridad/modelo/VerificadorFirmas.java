@@ -3,7 +3,12 @@ package com.seguridad.modelo;
 
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
+import javax.enterprise.context.Dependent;
+import javax.inject.Named;
 
+
+@Named(value = "verificadorFirmas")
+@Dependent
 public class VerificadorFirmas {
 
 private byte[] doc;
