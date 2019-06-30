@@ -14,13 +14,14 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Named;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
+import static javax.faces.application.FacesMessage.SEVERITY_ERROR;
+import static javax.faces.application.FacesMessage.SEVERITY_INFO;
 
 /**
  *
@@ -57,7 +58,7 @@ public class controlDeUsuario implements Serializable{
         this.usuario = usuario;
     }
     
-    public void registrarUsuario() throws NoSuchProviderException, Exception{
+    public boolean registrarUsuario() throws NoSuchProviderException, Exception{
         
         if(existeUsuario(this.usuario.getUsuario())){
             FacesMessage mensaje = new FacesMessage("El usuario ya existe, ingrese un nuevo nombre");
@@ -95,34 +96,36 @@ public class controlDeUsuario implements Serializable{
             datosAGuardar[0]=this.usuario.getNombre()+","+this.usuario.getApellido()+","+this.usuario.getUsuario()+","+password+","+sal+","+fecha+",usuario,false,false";
             
             if(ManejadorArchivosGenerico.escribirArchivo(rutaArchivo, datosAGuardar)){
-                
+                FacesMessage msg = new FacesMessage();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(SEVERITY_INFO, "El usuario se creo correctamente", null));
+                return true;
             }
+
         }
-                
+            FacesMessage msg2 = new FacesMessage();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(SEVERITY_ERROR, "El usuario no se creo, intente nuevamente", null));
+            return false;
     }
     
     
-    public void autenticarUsuario(){
-        if(existeUsuario(this.usuario.getUsuario())){
+    public boolean autenticarUsuario() {
+        if (existeUsuario(this.usuario.getUsuario())) {
             String sal = devolverSalDeUsuario(this.usuario.getUsuario());
-            String password=hashClave(this.usuario.getPassword()+sal);
-            if(comprobarClave(password)){
-                FacesMessage mensaje = new FacesMessage("Clave correcta");
-                FacesContext contexto = FacesContext.getCurrentInstance();
-                contexto.addMessage(null,mensaje);
-            }else{
-                FacesMessage mensaje = new FacesMessage("El usuario y/o la clave no son correctas");
-                FacesContext contexto = FacesContext.getCurrentInstance();
-                contexto.addMessage(null,mensaje);
+            String password = hashClave(this.usuario.getPassword() + sal);
+            if (comprobarClave(password)) {
+                FacesMessage msg2 = new FacesMessage();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(SEVERITY_INFO, "Usuario autenticado", null));
+                return true;
+            } else {
+                FacesMessage msg2 = new FacesMessage();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(SEVERITY_ERROR, "El usuario y/o la clave no son correctas", null));
             }
-                
-            
-            
-        }else{
-            FacesMessage mensaje = new FacesMessage("El usuario y/o la clave no son correctas");
-            FacesContext contexto = FacesContext.getCurrentInstance();
-            contexto.addMessage(null,mensaje);
+
+        } else {
+            FacesMessage msg2 = new FacesMessage();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(SEVERITY_ERROR, "El usuario y/o la clave no son correctas", null));
         }
+        return false;
     }
         
     private boolean existeUsuario(String usuario){

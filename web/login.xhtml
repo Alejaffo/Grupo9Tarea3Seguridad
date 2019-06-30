@@ -37,7 +37,7 @@
 
                            <br/>
                     
-                        <p:commandButton id="btnIngresar" icon="ui-icon-key" value="INGRESAR" update="pgLogin" actionListener="#{controlDeUsuario.autenticarUsuario()}"/>
+                        <p:commandButton id="btnIngresar" icon="ui-icon-key" value="INGRESAR" update="pgLogin,mensaje" action="#{controlDeUsuario.autenticarUsuario()}"/>
                         <p:message for="btnIngresar"/>
                         
                            <br/>
