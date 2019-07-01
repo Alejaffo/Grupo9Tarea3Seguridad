@@ -16,6 +16,7 @@ import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
+import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import javax.faces.application.FacesMessage;
@@ -103,28 +104,48 @@ public class controlDeFirma implements Serializable{
     // Metodo que se llama de la interfaz wep para verificar la firma de un archivo
     public void verificarArchivo() throws Exception {
         
-        // creo un Byte[] del archivo clave publica del usuario
-        byte[] bytePublica = fileToBytes(direccionKeyPublicas+nombreUsuario+".pub");
-        // creo un Byte[] del archivo clave publica del usuario
-        byte[] byteArchivoAVerificar = fileToBytes(this.rutaArchivoFirmar);
-        // creo un byte[] del archivo firma con el cual voy a verificar el archivo original
-        byte[] byteArchivoFirma = fileToBytes(direccionFirmas+archivoFirma+".frm");
-        
-        // creo una instancia de VerificadorFirmas
-        firmVerif = new VerificadorFirmas(byteArchivoAVerificar,byteArchivoFirma,bytePublica);
-        // el metodo verificarFirma() me devuelve true si el se valido la verificacion
-        boolean verificado = firmVerif.verificaFirma();
-        
-        if(verificado == true){
-            FacesMessage mensaje = new FacesMessage("Documento válido");
+        try{
+            
+            // creo un Byte[] del archivo clave publica del usuario
+            byte[] bytePublica = fileToBytes(direccionKeyPublicas+nombreUsuario+".pub");
+            // creo un Byte[] del archivo clave publica del usuario
+            byte[] byteArchivoAVerificar = fileToBytes(this.rutaArchivoFirmar);
+            // creo un byte[] del archivo firma con el cual voy a verificar el archivo original
+            byte[] byteArchivoFirma = fileToBytes(direccionFirmas+archivoFirma+".frm");
+
+            // creo una instancia de VerificadorFirmas
+            firmVerif = new VerificadorFirmas(byteArchivoAVerificar,byteArchivoFirma,bytePublica);
+            // el metodo verificarFirma() me devuelve true si el se valido la verificacion
+            boolean verificado = firmVerif.verificaFirma();
+         
+            if(verificado == true){
+                FacesMessage mensaje = new FacesMessage("Documento válido");
+                FacesContext contexto = FacesContext.getCurrentInstance();
+                contexto.addMessage(null,mensaje);
+                }
+                else{
+                FacesMessage mensaje = new FacesMessage("Documento inválido");
+                FacesContext contexto = FacesContext.getCurrentInstance();
+                contexto.addMessage(null,mensaje);
+            }
+      
+        }
+        catch(SignatureException e){
+            FacesMessage mensaje = new FacesMessage("Error: Firma Invalida o corrupta");
             FacesContext contexto = FacesContext.getCurrentInstance();
             contexto.addMessage(null,mensaje);
         }
-        else{
-            FacesMessage mensaje = new FacesMessage("Documento inválido");
+        catch(Exception e){
+            FacesMessage mensaje = new FacesMessage("Error al verificar el archivo");
             FacesContext contexto = FacesContext.getCurrentInstance();
             contexto.addMessage(null,mensaje);
+            
         }
+        
+        
+        
+        
+        
         
         
     }
